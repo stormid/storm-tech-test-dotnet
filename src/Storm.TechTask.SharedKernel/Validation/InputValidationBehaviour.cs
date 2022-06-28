@@ -1,0 +1,43 @@
+﻿using FluentValidation;
+
+using MediatR;
+
+using Storm.TechTask.SharedKernel.Entities;
+
+namespace Storm.TechTask.SharedKernel.Validation
+{
+    public class InputValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+        where TRequest : IRequest<TResponse>
+    {
+        private readonly IEnumerable<IValidator<TRequest>> _validators;
+
+        public InputValidationBehaviour(IEnumerable<IValidator<TRequest>> validators)
+        {
+            _validators = validators;
+        }
+
+        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
+            RequestHandlerDelegate<TResponse> next)
+        {
+            // Guard: No validators
+            if (!_validators.Any())
+            {
+                return await next();
+            }
+
+            var context = new ValidationContext<TRequest>(request);
+
+            var validationResults =
+                await Task.WhenAll(_validators
+                    .Select(v =>
+                        v.ValidateAsync(context, cancellationToken)));
+
+            var failures = validationResults
+                .SelectMany(r => r.Errors)
+                .Where(f => f != null)
+                .ToList();
+
+            return failures.Any() ? throw new InputValidationException(failures) : await next();
+        }
+    }
+}
