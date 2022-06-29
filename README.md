@@ -70,9 +70,9 @@ For other REST API tools, you will need the following settings:
 
 ## 3. Fix a bug
 
-A client has reported that changing a project status to _Closed_ does not work.  Add a unit test to replicate this issue, and then solve the simple bug.
+A client has reported that changing a project status to _Closed_ does not work.  This happens when the `Close()` method is called on the `Project` entity.  Add a unit test to replicate this issue, and then solve the simple bug. 
 
-A shell of a unit test method has already been added in `ProjectTests.cs` to save you time.  Just uncomment the block of code.
+A shell of a unit test method has already been added in `ProjectTests.cs` to save you time.  Just uncomment the block of code.  You can use the other tests in the file as a reference.
 
 >Possible discussion points:
 >
@@ -82,9 +82,9 @@ A shell of a unit test method has already been added in `ProjectTests.cs` to sav
 
 ## 4. Add a missing test
 
-In the integration tests project, there is an Endpoint test for the `List` endpoint, but not for the `GetById` endpoint.  
+In the integration tests project, there are Endpoint tests for the `List` and `Create` endpoints, but not for the `GetById` endpoint.  
 
-Add a new test for the `GetById` endpoint.
+Add a new test suite for the `GetById` endpoint.  The `List` tests will be a good reference point.
 
 >Possible discussion points:
 >

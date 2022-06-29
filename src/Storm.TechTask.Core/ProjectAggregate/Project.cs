@@ -59,8 +59,8 @@ namespace Storm.TechTask.Core.ProjectAggregate
             var item = new ToDoItem(title, description, false);
             this.Items.Add(item);
 
-            var newItemAddedEvent = new NewItemAddedEvent(this, item);
-            Events.Add(newItemAddedEvent);
+            //var newItemAddedEvent = new NewItemAddedEvent(this, item);
+            //Events.Add(newItemAddedEvent);
 
             return item;
         }
