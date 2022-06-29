@@ -4,7 +4,12 @@ This is a multi-project .Net 6.0 project.  It consists of a web api project, bas
 
 The api is deliberately very simple, managing the creation and retrieval of a "Project" entity only.
 
-Please make a fork of this project for your work. Each commit you make should relate to a single task. A more complex task may have many commits; this is up to you.
+Please push your work as commits to a user branch of this repository using the following branch naming convention:
+`users/<<your GitHub username>>/submission`
+
+Each commit you make should relate to a single task. A more complex task may have many commits; this is up to you.
+
+:warning: Please do not submit a pull request for your branch.
 
 The tasks below are not a test.  They are there to act as a discussion starter, to see what your approach to each problem might be.
 
