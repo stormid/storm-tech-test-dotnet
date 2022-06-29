@@ -21,11 +21,6 @@ namespace Storm.TechTask.Api.Utilities.IdentityServer
                     {
                         AuthorizationUrl = new Uri(identityServerConfig.AuthZEndpoint),
                         TokenUrl = new Uri(identityServerConfig.TokenEndpoint)
-                    },
-                    Password = new OpenApiOAuthFlow
-                    {
-                        AuthorizationUrl = new Uri(identityServerConfig.AuthZEndpoint),
-                        TokenUrl = new Uri(identityServerConfig.TokenEndpoint)
                     }
                 }
             });

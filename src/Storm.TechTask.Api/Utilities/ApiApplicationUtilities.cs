@@ -50,8 +50,8 @@ namespace Storm.TechTask.Api.Utilities
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Storm.NET V1");
-                c.UseOAuthOptions(configuration);
-            });
+                    c.UseOAuthOptions(configuration);
+                });
             }
 
             app.MapDefaultControllerRoute();
