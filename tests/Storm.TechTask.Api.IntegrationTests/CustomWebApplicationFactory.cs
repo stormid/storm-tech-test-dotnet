@@ -56,7 +56,6 @@ namespace Storm.TechTask.Api.IntegrationTests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder
-                .UseSolutionRelativeContentRoot("src/StormDotNet.Channel.Api")
                 .ConfigureServices(services =>
                 {
                     BaseEndpointFixture.DbContextFactory.ConfigureDbContextForApi(services);
