@@ -9,7 +9,7 @@ Please push your work as commits to a user branch of this repository using the f
 
 Each commit you make should relate to a single task. A more complex task may have many commits; this is up to you.
 
-:warning: Please do not submit a pull request for your branch.
+:warning: Please do not submit a pull request for your branch. :warning:
 
 The tasks below are not a test.  They are there to act as a discussion starter, to see what your approach to each problem might be.
 
