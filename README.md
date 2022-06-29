@@ -32,7 +32,7 @@ In Visual Studio, simply open the Solution file `Storm.TechTask.sln` and build t
 
 ## 2. Run the project
 
-Individual projects can be run from the command line when required
+Run the project in Visual Studio, or alternatively individual projects can be run from the command line when required
 
 Api:
 ```
@@ -44,21 +44,22 @@ Web:
 dotnet run --project .\src\Storm.TechTask.Web\
 ```
 
-The API project is available at `https://localhost:5011`.  You should see the Swagger API definitions for the endpoints
+The API project is available at https://localhost:5011.  You should see the Swagger API definitions for the endpoints
 
-The Web project is available at `https://localhost:5001`.  If you want to run using different ports, you will need to change the application config settings that point to the API.
+The Web project is available at https://localhost:5001.  If you want to run using different ports, you will need to change the application config settings that point to the API.
 
 Try sending some API requests.  You could do this with a tool like [Postman](https://www.postman.com/) or [Insomnia](https://insomnia.rest/), or you can use the Swagger UI to send requests.  
 
-The API is protected using [Identity Server 4]() with [Client Credentials]() flow.  In the Swagger UI, you will need to authenticate using the padlock icon.  The values for ClientId and ClientSecret are pre-populated, so you just need to `Authorize` and then you can send api messages.
+The API is protected using [Identity Server 4](https://github.com/IdentityServer/IdentityServer4) with [Client Credentials](https://docs.identityserver.io/en/latest/quickstarts/1_client_credentials.html) flow.  In the Swagger UI, you will need to authenticate using the padlock icon.  The values for ClientId and ClientSecret are pre-populated, so you just need to `Authorize` and then you can send api messages.
+
 ![swagger auth](./images/swagger-padlock.png)
  
 
 For other REST API tools, you will need the following settings:
 
-* Authentication: OAuth2
-* Grant Type: Client Credentials
-* Access token url: `https://localhost:5011/connect/token`
+* Authentication: _OAuth2_
+* Grant Type: _Client Credentials_
+* Access token url: https://localhost:5011/connect/token
 * Client Id: `26aca281-aad3-4de6-8633-b3295e36425e`
 * Client Secret: `eb300de4-add9-42f4-a3ac-abd3c60f1919`
 
@@ -100,6 +101,7 @@ Update the endpoint to return this status code instead. Make sure the Swagger do
 >
 > * Integration testing with databases
 > * Authentication and authorization for integration tests.
+> * API design "best practices"
 
 ## 6. Add a new Project property
 
@@ -115,7 +117,7 @@ You only need to add these to the API response.  Do not worry about adding them 
 
 >Possible discussion points:
 >
-> * How do you deal with database changes and updates in a production system.
+> * How do you deal with database changes and updates in a production system?
 > * API versioning
 
 ## 7. Add a domain event
