@@ -25,7 +25,7 @@ namespace Storm.TechTask.Core.ProjectAggregate
         {
             this.IsDone = true;
 
-            Events.Add(new ToDoItemCompletedEvent(this));
+            // This would be a good place for another domain event
         }
 
         public override string ToString()

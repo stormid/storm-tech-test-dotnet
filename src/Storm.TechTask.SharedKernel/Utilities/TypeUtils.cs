@@ -66,4 +66,5 @@ namespace Storm.TechTask.SharedKernel.Utilities
 
         #endregion
     }
+
 }
