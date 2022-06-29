@@ -1,0 +1,33 @@
+trigger:
+- main
+- release/*
+
+stages:
+  - stage: build
+    displayName: Execute Build
+    jobs:
+      - job: BuildArtifacts
+        displayName: Build Project Artifacts
+        variables:
+          NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+          frontend.src: 'frontend'
+          npm_config_cache: $(Pipeline.Workspace)/.npm
+        pool:
+          vmImage: 'windows-latest'
+        steps:
+          - checkout: self
+            persistCredentials: true
+
+          - task: UseNode@1
+            inputs:
+              version: 14.x
+
+          - task: DotNetCoreCLI@2
+            displayName: Restore dotnet tools
+            inputs:
+              command: "custom"
+              custom: "tool"
+              arguments: "restore"
+
+          - script: dotnet cake"
+            displayName: Run Cake
