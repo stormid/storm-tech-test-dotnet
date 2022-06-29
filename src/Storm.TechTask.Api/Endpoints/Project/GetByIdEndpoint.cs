@@ -33,7 +33,7 @@ namespace Storm.TechTask.Api.Endpoints.Project
                 return NotFound();
             }
 
-            var response = new ProjectDto(entity.Id, entity.Name);
+            var response = new ProjectDetailsDto(entity.Id, entity.Name, entity.Category, entity.Status);
             return Ok(response);
         }
     }

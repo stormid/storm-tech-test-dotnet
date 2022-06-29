@@ -1,0 +1,39 @@
+﻿@page "{id:int}"
+@model Storm.TechTask.Web.Pages.DetailModel
+@{
+}
+<div>
+    <h1 class="display-4">Project Detail</h1>
+    <dl>
+        <dt>Id:</dt>
+        <dd>@Model.Project.Id</dd>
+        <dt>Name:</dt>
+        <dd>@Model.Project.Name</dd>
+        <dt>Category:</dt>
+        <dd>@Model.Project.Category</dd>
+        <dt>Status:</dt>
+        <dd>@Model.Project.Status</dd>
+    </dl>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Is Done?</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Project.Items != null)
+            {
+                foreach (var item in Model.Project.Items)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.Description</td>
+                        <td>@item.IsDone</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

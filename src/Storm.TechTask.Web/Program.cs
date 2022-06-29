@@ -1,7 +1,11 @@
+using Storm.TechTask.Web.ApiClient;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddApiClients(builder.Configuration);
 
 var app = builder.Build();
 
