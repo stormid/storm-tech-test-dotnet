@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 using Ardalis.GuardClauses;
 
 using Storm.TechTask.Core.ProjectAggregate.Services;
@@ -39,18 +34,18 @@ namespace Storm.TechTask.Core.ProjectAggregate
 
         public Project(string name, ProjectCategory category, bool internalOnly, ProjectStatus status)
         {
-            this.Name = name;
-            this.Category = category;
-            this.InternalOnly = internalOnly;
-            this.Status = status;
+            Name = name;
+            Category = category;
+            InternalOnly = internalOnly;
+            Status = status;
         }
 
         public async Task Update(string newName, ProjectCategory newCategory, bool newInternalOnly, IProjectUniquenessChecker uniquenessChecker, CancellationToken token)
         {
             await uniquenessChecker.VerifyNameUnique(this, newName, token);
-            this.Name = Guard.Against.NullOrEmpty(newName, nameof(newName));
-            this.Category = Guard.Against.InvalidInput(newCategory, nameof(newCategory), c => c != ProjectCategory.NotSet);
-            this.InternalOnly = newInternalOnly;
+            Name = Guard.Against.NullOrEmpty(newName, nameof(newName));
+            Category = Guard.Against.InvalidInput(newCategory, nameof(newCategory), c => c != ProjectCategory.NotSet);
+            InternalOnly = newInternalOnly;
         }
 
         /*
@@ -77,17 +72,17 @@ namespace Storm.TechTask.Core.ProjectAggregate
 
         public void Pause()
         {
-            this.Status = ProjectStatus.Paused;
+            Status = ProjectStatus.Paused;
         }
 
         public void Resume()
         {
-            this.Status = ProjectStatus.Open;
+            Status = ProjectStatus.Open;
         }
 
         public void Close()
         {
-            this.Status = ProjectStatus.Paused;
+            Status = ProjectStatus.Closed;
         }
     }
 }

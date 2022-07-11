@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 using Moq;
 
 using Storm.TechTask.Core.ProjectAggregate;
@@ -25,9 +20,9 @@ namespace Storm.TechTask.UnitTests.Core.ProjectAggregate
         public async Task ChangesStateWhenUpdated()
         {
             // Arrange
-            var actual = NewProject().Set(p => p.Name, "original-name").Build();
-            var expected = NewProject().BuildFrom(actual).Set(p => p.Name, "new-name").Set(p => p.Category, ProjectCategory.Consultancy).Set(p => p.InternalOnly, false).Build();
-            var uniquenessChecker = new Mock<IProjectUniquenessChecker>(MockBehavior.Strict);
+            Project? actual = NewProject().Set(p => p.Name, "original-name").Build();
+            Project? expected = NewProject().BuildFrom(actual).Set(p => p.Name, "new-name").Set(p => p.Category, ProjectCategory.Consultancy).Set(p => p.InternalOnly, false).Build();
+            Mock<IProjectUniquenessChecker>? uniquenessChecker = new Mock<IProjectUniquenessChecker>(MockBehavior.Strict);
             uniquenessChecker.Setup(uc => uc.VerifyNameUnique(actual, expected.Name, default)).Returns(Task.CompletedTask);
 
             // Act
@@ -41,8 +36,8 @@ namespace Storm.TechTask.UnitTests.Core.ProjectAggregate
         public void ChangesStateWhenPaused()
         {
             // Arrange
-            var actual = NewProject().Set(p => p.Status, ProjectStatus.Open).Build();
-            var expected = NewProject().BuildFrom(actual).Set(p => p.Status, ProjectStatus.Paused).Build();
+            Project? actual = NewProject().Set(p => p.Status, ProjectStatus.Open).Build();
+            Project? expected = NewProject().BuildFrom(actual).Set(p => p.Status, ProjectStatus.Paused).Build();
 
             // Act
             actual.Pause();
@@ -55,8 +50,8 @@ namespace Storm.TechTask.UnitTests.Core.ProjectAggregate
         public void ChangesStateWhenResumed()
         {
             // Arrange
-            var actual = NewProject().Set(p => p.Status, ProjectStatus.Paused).Build();
-            var expected = NewProject().BuildFrom(actual).Set(p => p.Status, ProjectStatus.Open).Build();
+            Project? actual = NewProject().Set(p => p.Status, ProjectStatus.Paused).Build();
+            Project? expected = NewProject().BuildFrom(actual).Set(p => p.Status, ProjectStatus.Open).Build();
 
             // Act
             actual.Resume();
@@ -65,12 +60,24 @@ namespace Storm.TechTask.UnitTests.Core.ProjectAggregate
             actual.ShouldHaveSameStateAs(expected);
         }
 
-        /* 
+
         // Uncomment this block for Task 3 - Fix a bug 
         [Fact]
         public void ChangesStateWhenClosed()
         {
+
+            // Arrange
+            Project? actual = NewProject().Set(p => p.Status, ProjectStatus.Open).Build();
+            Project? expected = NewProject().BuildFrom(actual).Set(p => p.Status, ProjectStatus.Closed).Build();
+
+            // Act
+            actual.Close();
+
+            // Assert
+            actual.ShouldHaveSameStateAs(expected);
+
+
         }
-        */
+
     }
 }
