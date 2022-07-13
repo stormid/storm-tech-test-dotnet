@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 using IdentityModel.Client;
 
 using Storm.TechTask.Api.Endpoints.Project;
@@ -27,11 +22,11 @@ namespace Storm.TechTask.Api.IntegrationTests.Endpoints.Projects
         public async Task ReturnsProjects(AppRole role)
         {
             // Arrange
-            var projects = await Task.WhenAll(NewProject().BuildAndPersist(), NewProject().BuildAndPersist(), NewProject().BuildAndPersist());
-            this.HttpClient.SetBearerToken(await this.TokenIssuer.GetNewToken(role));
+            Core.ProjectAggregate.Project[]? projects = await Task.WhenAll(NewProject().BuildAndPersist(), NewProject().BuildAndPersist(), NewProject().BuildAndPersist());
+            HttpClient.SetBearerToken(await TokenIssuer.GetNewToken(role));
 
             // Act
-            var response = await this.HttpClient.GetAsync("/Projects");
+            HttpResponseMessage? response = await HttpClient.GetAsync("/Projects");
 
             // Assert
             await response.ShouldBeSuccess().WithListPayload(new List<ProjectDto> {
@@ -44,11 +39,11 @@ namespace Storm.TechTask.Api.IntegrationTests.Endpoints.Projects
         public async Task ShouldBeForbidden()
         {
             // Arrange
-            var projects = await Task.WhenAll(NewProject().BuildAndPersist(), NewProject().BuildAndPersist(), NewProject().BuildAndPersist());
-            this.HttpClient.SetBearerToken(await this.TokenIssuer.GetNewToken(AppRole.SysAdmin));
+            Core.ProjectAggregate.Project[]? projects = await Task.WhenAll(NewProject().BuildAndPersist(), NewProject().BuildAndPersist(), NewProject().BuildAndPersist());
+            HttpClient.SetBearerToken(await TokenIssuer.GetNewToken(AppRole.SysAdmin));
 
             // Act
-            var response = await this.HttpClient.GetAsync("/Projects");
+            HttpResponseMessage? response = await HttpClient.GetAsync("/Projects");
 
             // Assert
             response.ShouldBeNotAuthorised();
@@ -58,7 +53,7 @@ namespace Storm.TechTask.Api.IntegrationTests.Endpoints.Projects
         public async Task ShouldBeUnauthorized()
         {
             // Act
-            var response = await this.HttpClient.GetAsync("/Projects");
+            HttpResponseMessage? response = await HttpClient.GetAsync("/Projects");
 
             // Assert
             response.ShouldBeNotAuthenticated();
