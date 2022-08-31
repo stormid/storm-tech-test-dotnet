@@ -23,12 +23,15 @@ namespace Storm.TechTask.Api.Endpoints.Project
             Description = "Creates a new Project",
             OperationId = "Projects.Create",
             Tags = new[] { "ProjectEndpoints" })]
+        [ProducesResponseType(StatusCodes.Status201Created)] // Added to update Swagger (Task 5)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)] // Added to update Swagger (Task 8)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)] // Added to update Swagger (Task 8)
         public override async Task<ActionResult<ProjectDto>> HandleAsync(CreateProject.Command request,
             CancellationToken cancellationToken)
         {
             var project = await _mediator.Send(request, cancellationToken);
 
-            return Ok(new ProjectDto(project.Id, project.Name));
+            return CreatedAtRoute("GetById", new { Id = project.Id }, new ProjectDto(project.Id, project.Name));
         }
     }
 }

@@ -24,6 +24,9 @@ namespace Storm.TechTask.Api.Endpoints.Project
             OperationId = "Projects.List",
             Tags = new[] { "ProjectEndpoints" })
         ]
+        [ProducesResponseType(StatusCodes.Status200OK)] // Added to update Swagger (Task 8)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)] // Added to update Swagger (Task 8)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)] // Added to update Swagger (Task 8)
         public override async Task<ActionResult<List<ProjectDto>>> HandleAsync([FromRoute] AllProjects.Query request, CancellationToken cancellationToken)
         {
             var projects = (await _mediator.Send(request, cancellationToken))

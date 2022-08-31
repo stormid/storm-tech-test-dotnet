@@ -17,13 +17,17 @@ namespace Storm.TechTask.Api.Endpoints.Project
         {
         }
 
-        [HttpGet("/Projects/{Id:int}")]
+        [HttpGet("/Projects/{Id:int}", Name="GetById")]
         [SwaggerOperation(
             Summary = "Gets a single Project",
             Description = "Gets a single Project by Id",
             OperationId = "Projects.GetById",
             Tags = new[] { "ProjectEndpoints" })
         ]
+        [ProducesResponseType(StatusCodes.Status200OK)] // Added to update Swagger (Task 8)
+        [ProducesResponseType(StatusCodes.Status404NotFound)] // Added to update Swagger (Task 8)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)] // Added to update Swagger (Task 8)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)] // Added to update Swagger (Task 8)
         public override async Task<ActionResult<ProjectDto>> HandleAsync([FromRoute] ProjectDetails.Query request,
             CancellationToken cancellationToken)
         {
