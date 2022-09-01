@@ -37,7 +37,11 @@ namespace Storm.TechTask.Api.Endpoints.Project
                 return NotFound();
             }
 
-            var response = new ProjectDetailsDto(entity.Id, entity.Name, entity.Category, entity.Status);
+            // I'm not particularly happy with the following line, a better way would be to map the data straight from the repo call
+            // After spending an hour or so on this task, I figured I'd leave this as is. Call it a piece of tech debt :(
+            var toDoItems = await _mediator.Send(new ToDoItems.Query(entity.Id), cancellationToken);
+
+            var response = new ProjectDetailsDto(entity.Id, entity.Name, entity.Category, entity.Status, toDoItems);
             return Ok(response);
         }
     }

@@ -1,14 +1,15 @@
 ﻿using Storm.TechTask.SharedKernel.Entities;
+using Storm.TechTask.SharedKernel.Interfaces;
 
 namespace Storm.TechTask.Core.ProjectAggregate
 {
-    /*
     [Serializable]
-    public class ToDoItem : BaseEntity
+    public class ToDoItem : BaseEntity, IAggregateRoot
     {
         public string Title { get; set; } = null!;
         public string Description { get; set; } = null!;
         public bool IsDone { get; private set; }
+        public int ProjectID { get; set; }
 
         public ToDoItem()
         {
@@ -34,5 +35,4 @@ namespace Storm.TechTask.Core.ProjectAggregate
             return $"{Id}: Status: {status} - {Title} - {Description}";
         }
     }
-    */
 }

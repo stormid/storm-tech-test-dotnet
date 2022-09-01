@@ -13,8 +13,7 @@ namespace Storm.TechTask.UnitTests.Utilities.Builders.ProjectAggregate
         public ProjectBuilder() : base(new Project("name", ProjectCategory.Development, false, ProjectStatus.Open))
         {
         }
-
-        /*
+        
         public ProjectBuilder WithToDoItems()
         {
             return WithToDoItems(new[] {
@@ -29,8 +28,7 @@ namespace Storm.TechTask.UnitTests.Utilities.Builders.ProjectAggregate
             Target.Items.AddRange(todoItems);
             return this;
         }
-        */
-
+        
         public new ProjectBuilder BuildFrom(Project toCopy)
         {
             return (ProjectBuilder)base.BuildFrom(toCopy);
