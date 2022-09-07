@@ -8,16 +8,16 @@ using Storm.TechTask.SharedKernel.Entities;
 
 namespace Storm.TechTask.Core.ProjectAggregate.Events
 {
-    public class NewItemAddedEvent : BaseDomainEvent
+    public class ItemCompletedEvent : BaseDomainEvent
     {
-        public ToDoItem NewItem { get; set; }
+        public ToDoItem CompletedItem { get; set; }
         public Project Project { get; set; }
 
-        public NewItemAddedEvent(Project project,
-            ToDoItem newItem)
+        public ItemCompletedEvent(Project project,
+            ToDoItem completedItem)
         {
             Project = project;
-            NewItem = newItem;
+            CompletedItem = completedItem;
         }
     }
 }
