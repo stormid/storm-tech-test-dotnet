@@ -28,7 +28,7 @@ namespace Storm.TechTask.Api.Endpoints.Project
         {
             var project = await _mediator.Send(request, cancellationToken);
 
-            return Ok(new ProjectDto(project.Id, project.Name));
+            return CreatedAtAction(nameof(GetByIdEndpoint), new { project.Id }, project);
         }
     }
 }
