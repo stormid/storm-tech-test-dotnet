@@ -32,7 +32,11 @@ namespace Storm.TechTask.UnitTests.Core.ProjectAggregate.Services
             // Arrange
             var mockRepo = new Mock<IReadRepository>(MockBehavior.Strict);
             mockRepo.Setup(r => r.CountAsync(It.IsAny<ProjectsWithNameSpec>(), default)).ReturnsAsync(0);
-            var expected = NewProject().Set(p => p.Name, "name").Set(p => p.Category, ProjectCategory.Consultancy).Set(p => p.InternalOnly, false).Build();
+            var expected = NewProject()
+                .Set(p => p.Name, "name")
+                .Set(p => p.Category, ProjectCategory.Consultancy)
+                .Set(p => p.InternalOnly, false)
+                .Set(p => p.Items, new List<ToDoItem>()).Build();
             var creator = new ProjectCreator(mockRepo.Object);
 
             // Act

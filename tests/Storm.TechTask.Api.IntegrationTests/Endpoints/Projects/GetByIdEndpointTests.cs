@@ -41,7 +41,23 @@ namespace Storm.TechTask.Api.IntegrationTests.Endpoints.Projects
 
             // Assert
             await response.ShouldBeSuccess().WithObjectPayload(new ProjectDto(projects[0].Id, projects[0].Name));
-        }        
+        }
+
+        [Theory]
+        [AllRolesExcept(AppRole.SysAdmin)]
+        public async Task ReturnsProjectToDoItems(AppRole role)
+        {
+            // Arrange
+            var projects = await Task.WhenAll(NewProject().BuildAndPersist(), NewProject().BuildAndPersist(), NewProject().BuildAndPersist());
+            this.HttpClient.SetBearerToken(await this.TokenIssuer.GetNewToken(role));
+
+            // Act
+            var response = await this.HttpClient.GetAsync($"/Projects/{projects[0].Id}");
+
+            // Assert
+            await response.ShouldBeSuccess()
+                .WithObjectContainingListPayload(new ProjectDetailsDto(projects[0].Id, projects[0].Name, projects[0].Category, projects[0].Status, projects[0].Items), projects[0].Items);
+        }
 
         [Theory]
         [AllRolesExcept(AppRole.SysAdmin)]

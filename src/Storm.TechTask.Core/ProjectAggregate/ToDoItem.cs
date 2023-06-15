@@ -2,7 +2,7 @@
 
 namespace Storm.TechTask.Core.ProjectAggregate
 {
-    /*
+
     [Serializable]
     public class ToDoItem : BaseEntity
     {
@@ -34,5 +34,4 @@ namespace Storm.TechTask.Core.ProjectAggregate
             return $"{Id}: Status: {status} - {Title} - {Description}";
         }
     }
-    */
 }

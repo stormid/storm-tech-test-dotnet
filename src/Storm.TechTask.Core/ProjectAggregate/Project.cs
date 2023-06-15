@@ -35,7 +35,7 @@ namespace Storm.TechTask.Core.ProjectAggregate
         public ProjectCategory Category { get; private set; }
         public bool InternalOnly { get; private set; }
         public ProjectStatus Status { get; private set; }
-        //public List<ToDoItem> Items { get; private set; } = new List<ToDoItem>();
+        public List<ToDoItem> Items { get; private set; } = new List<ToDoItem>();
 
         public Project(string name, ProjectCategory category, bool internalOnly, ProjectStatus status)
         {
@@ -53,7 +53,6 @@ namespace Storm.TechTask.Core.ProjectAggregate
             this.InternalOnly = newInternalOnly;
         }
 
-        /*
         public ToDoItem AddItem(string title, string description)
         {
             var item = new ToDoItem(title, description, false);
@@ -65,6 +64,7 @@ namespace Storm.TechTask.Core.ProjectAggregate
             return item;
         }
 
+        /*
         public ToDoItem CompleteItem(int itemId)
         {
             var item = Items.GetChildEntity(itemId);

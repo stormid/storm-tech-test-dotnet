@@ -36,7 +36,8 @@ namespace Storm.TechTask.Api.IntegrationTests.Endpoints.Projects
                 .Set(p => p.Name, "name")
                 .Set(p => p.Category, ProjectCategory.Development)
                 .Set(p => p.InternalOnly, true)
-                .Set(p => p.Status, ProjectStatus.Open).Build();
+                .Set(p => p.Status, ProjectStatus.Open)
+                .Set(p => p.Items, new List<ToDoItem>()).Build();
             await expected.ShouldBeInDb();
         }
 

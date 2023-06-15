@@ -26,7 +26,7 @@ namespace Storm.TechTask.UnitTests
 
         protected ProjectBuilder NewProject()
         {
-            return new ProjectBuilder();
+            return new ProjectBuilder().WithToDoItems();
         }
 
         #endregion

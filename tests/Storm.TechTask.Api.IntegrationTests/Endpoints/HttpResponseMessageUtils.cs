@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -101,6 +103,29 @@ namespace Storm.TechTask.Api.IntegrationTests.Endpoints
         {
             var jsonPayload = await response.Content.ReadAsStringAsync();
             var actualPayload = jsonPayload.JsonDeserialise<T>();
+            actualPayload.ShouldHaveSameStateAs(expectedPayload);
+
+            return response;
+        }
+
+        public static async Task<HttpResponseMessage> WithObjectContainingListPayload<T1, T2>(this HttpResponseMessage response, T1 expectedPayload, List<T2> expectedListPayload)
+        {
+            var jsonPayload = await response.Content.ReadAsStringAsync();
+            var actualPayload = jsonPayload.JsonDeserialise<T1>();
+
+            var objectProperties = actualPayload?.GetType().GetProperties();
+            
+            if (objectProperties is not null)
+            {
+                var listType = objectProperties.FirstOrDefault(x => x.PropertyType == typeof(List<T2>));
+                if(listType is not null)
+                {
+                    var listObject = listType.GetValue(actualPayload, null);
+                    if (listObject is not null)
+                        ((List<T2>)listObject).ShouldHaveSameItemStateAs(expectedListPayload);
+                }
+            }          
+
             actualPayload.ShouldHaveSameStateAs(expectedPayload);
 
             return response;
