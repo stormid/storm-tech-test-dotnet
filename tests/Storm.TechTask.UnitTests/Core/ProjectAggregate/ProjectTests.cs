@@ -64,13 +64,19 @@ namespace Storm.TechTask.UnitTests.Core.ProjectAggregate
             // Assert
             actual.ShouldHaveSameStateAs(expected);
         }
-
-        /* 
-        // Uncomment this block for Task 3 - Fix a bug 
+        
         [Fact]
         public void ChangesStateWhenClosed()
         {
-        }
-        */
+            // Arrange
+            var actual = NewProject().Set(p => p.Status, ProjectStatus.Open).Build();
+            var expected = NewProject().BuildFrom(actual).Set(p => p.Status, ProjectStatus.Closed).Build();
+
+            // Act
+            actual.Close();
+
+            // Assert
+            actual.ShouldHaveSameStateAs(expected);
+        }        
     }
 }
