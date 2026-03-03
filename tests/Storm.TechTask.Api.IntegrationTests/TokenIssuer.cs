@@ -1,9 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using IdentityModel.Client;
-
-using IdentityServer4.Contrib.AspNetCore.Testing.Configuration;
-using IdentityServer4.Contrib.AspNetCore.Testing.Services;
+using Duende.IdentityModel.Client;
 
 using Storm.TechTask.Api.Utilities.IdentityServer;
 using Storm.TechTask.SharedKernel.Authorization;
@@ -15,29 +10,47 @@ namespace Storm.TechTask.Api.IntegrationTests
     public class TokenIssuer
     {
         private readonly IdentityServerConfig _identityServerConfig;
-        private readonly IdentityServerWebHostProxy _identityServerProxy;
+        private readonly HttpClient _httpClient;
 
-        public TokenIssuer(IdentityServerConfig identityServerConfig, IdentityServerWebHostProxy identityServerProxy)
+        public TokenIssuer(IdentityServerConfig identityServerConfig, HttpClient httpClient)
         {
             _identityServerConfig = identityServerConfig;
-            _identityServerProxy = identityServerProxy;
+            _httpClient = httpClient;
         }
 
         public async Task<DiscoveryDocumentResponse> GetDiscoveryDocument()
         {
-            return await _identityServerProxy.GetDiscoverResponseAsync();
+            return await _httpClient.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest
+            {
+                Address = _identityServerConfig.Issuer,
+                Policy = new DiscoveryPolicy
+                {
+                    RequireHttps = false,
+                    ValidateIssuerName = false,
+                    ValidateEndpoints = false
+                }
+            });
         }
 
         public async Task<string> GetNewToken(AppRole roles)
         {
-            TokenResponse? tokenResponse;
-            tokenResponse = await _identityServerProxy.GetClientAccessTokenAsync(
-                new ClientConfiguration(_identityServerConfig.ClientCredentials.ClientId, _identityServerConfig.ClientCredentials.ClientSecret),
-                roles.ToScopeNames());
+            var disco = await GetDiscoveryDocument();
+            Assert.False(disco.IsError, disco.Error);
+
+            var scopes = string.Join(" ", roles.ToScopeNames());
+
+            var tokenResponse = await _httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = _identityServerConfig.ClientCredentials.ClientId,
+                ClientSecret = _identityServerConfig.ClientCredentials.ClientSecret,
+                Scope = scopes
+            });
+
             Assert.NotNull(tokenResponse);
             Assert.False(tokenResponse.IsError, tokenResponse.Error ?? tokenResponse.ErrorDescription);
 
-            return tokenResponse.AccessToken;
+            return tokenResponse.AccessToken!;
         }
     }
 }

@@ -55,10 +55,13 @@ namespace Storm.TechTask.Api.IntegrationTests
             }
 
             // Add ApplicationDbContext using an in-memory database for testing.
-            services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseInMemoryDatabase(_databaseName, InMemoryDatabaseRoot);
-            });
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(_databaseName, InMemoryDatabaseRoot)
+                .Options;
+
+            services.AddSingleton(options);
+            services.AddScoped(sp =>
+                new AppDbContext(sp.GetRequiredService<DbContextOptions<AppDbContext>>(), sp.GetService<IMediator>()));
 
             return services;
         }

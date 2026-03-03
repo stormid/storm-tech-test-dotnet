@@ -28,10 +28,10 @@ namespace Storm.TechTask.UnitTests.Core.ProjectAggregate.Commands
         [Theory]
         [InlineData(null)]
         [InlineData("")]
-        public void ShouldProduceValidationErrorWhenNameIsNullOrEmpty(string name)
+        public void ShouldProduceValidationErrorWhenNameIsNullOrEmpty(string? name)
         {
             // Arrange
-            var command = new CreateProject.Command(name, ProjectCategory.Development, true);
+            var command = new CreateProject.Command(name!, ProjectCategory.Development, true);
 
             // Act
             var result = _validator.TestValidate(command);

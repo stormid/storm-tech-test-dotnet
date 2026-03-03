@@ -1,29 +1,30 @@
-﻿using System;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace Storm.TechTask.UnitTests.Utilities.Builders
 {
     public static class ObjectCopier
     {
+        private static readonly Lazy<Type[]> SerializableTypes = new(LoadSerializableTypes);
+
+        private static Type[] LoadSerializableTypes()
+        {
+            return [.. AppDomain.CurrentDomain.GetAssemblies()
+                .Where(assembly => assembly.FullName?.StartsWith("Storm.", StringComparison.OrdinalIgnoreCase) ?? false)
+                .SelectMany(assembly => assembly.GetTypes())
+                .Where(type => type.GetCustomAttributes(typeof(SerializableAttribute), false).Length > 0)];
+        }
+
         public static T Copy<T>(T source)
             where T : notnull
         {
-            if (!typeof(T).IsSerializable)
-            {
-                throw new ArgumentException("The type must be serializable.", "source");
-            }
+            DataContractSerializer serializer = new(
+                type: source.GetType(),
+                knownTypes: SerializableTypes.Value);
 
-            var formatter = new BinaryFormatter();
-            using (var stream = new MemoryStream())
-            {
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
-                formatter.Serialize(stream, source);
-                stream.Seek(0, SeekOrigin.Begin);
-
-                return (T)formatter.Deserialize(stream);
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
-            }
+            using var stream = new MemoryStream();
+            serializer.WriteObject(stream, source);
+            stream.Position = 0;
+            return (T)serializer.ReadObject(stream)!;
         }
     }
 

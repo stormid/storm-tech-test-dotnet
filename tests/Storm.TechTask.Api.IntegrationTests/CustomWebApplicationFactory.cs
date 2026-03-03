@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using IdentityServer4.Contrib.AspNetCore.Testing.Builder;
-using IdentityServer4.Contrib.AspNetCore.Testing.Services;
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.PlatformAbstractions;
 
 using Storm.TechTask.Api.Utilities.IdentityServer;
 using Storm.TechTask.SharedKernel;
@@ -23,25 +15,17 @@ namespace Storm.TechTask.Api.IntegrationTests
     public class CustomWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
         private readonly IdentityServerConfig _identityServerConfig;
-        private readonly IdentityServerWebHostProxy _identityServerProxy;
 
         public CustomWebApplicationFactory()
         {
             _identityServerConfig = GetIdentityServerConfig();
-
-            var webHostBuilder = new IdentityServerTestWebHostBuilder()
-                .AddApiScopes(ResourceManager.Scopes.ToArray())
-                .AddApiResources(ResourceManager.Apis(_identityServerConfig).ToArray())
-                .AddClients(ClientManager.Clients(_identityServerConfig).ToArray())
-                .CreateWebHostBuilder();
-            _identityServerProxy = new IdentityServerWebHostProxy(webHostBuilder);
         }
 
         private IdentityServerConfig GetIdentityServerConfig()
         {
-            // Read config from Channel.Api settings, then overwrite URLs to eliminate dev port numbers.
+            // Read config from Api settings, then overwrite URLs to eliminate dev port numbers.
             var builder = new ConfigurationBuilder()
-                .SetBasePath(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "../../../../../src/Storm.TechTask.Api"))
+                .SetBasePath(Path.Combine(AppContext.BaseDirectory, "../../../../../src/Storm.TechTask.Api"))
                 .AddJsonFile("appsettings.json");
             var identityServerConfig = IdentityServerConfig.New(builder.Build());
             identityServerConfig.Issuer = "http://localhost";
@@ -51,7 +35,7 @@ namespace Storm.TechTask.Api.IntegrationTests
             return identityServerConfig;
         }
 
-        public TokenIssuer CreateTokenIssuer() => new TokenIssuer(_identityServerConfig, _identityServerProxy);
+        public TokenIssuer CreateTokenIssuer() => new TokenIssuer(_identityServerConfig, this.CreateClient());
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -60,7 +44,7 @@ namespace Storm.TechTask.Api.IntegrationTests
                 {
                     BaseEndpointFixture.DbContextFactory.ConfigureDbContextForApi(services);
 
-                    services.AddTestIdProvider(_identityServerConfig, _identityServerProxy.IdentityServer.CreateHandler());
+                    services.AddTestIdProvider(_identityServerConfig);
                     services.AddSharedKernel();
                 });
         }
@@ -69,12 +53,19 @@ namespace Storm.TechTask.Api.IntegrationTests
         /// Overriding CreateHost to avoid creating a separate ServiceProvider per this thread:
         /// https://github.com/dotnet-architecture/eShopOnWeb/issues/465
         /// </summary>
-        /// <param name="builder"></param>
-        /// <returns></returns>
         protected override IHost CreateHost(IHostBuilder builder)
         {
             builder.UseEnvironment(SharedKernel.Utilities.Environment.ApiTest);
             var host = builder.Build();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<OpenIddictDbContext>();
+                db.Database.EnsureCreated();
+
+                OpenIddictSeeder.SeedScopes(scope.ServiceProvider, CancellationToken.None).GetAwaiter().GetResult();
+                OpenIddictSeeder.SeedClients(scope.ServiceProvider, _identityServerConfig, CancellationToken.None).GetAwaiter().GetResult();
+            }
 
             host.Start();
             return host;
