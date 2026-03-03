@@ -1,4 +1,11 @@
-﻿using IdentityServer4.AccessTokenValidation;
+using System.Security.Claims;
+
+using Microsoft.EntityFrameworkCore;
+
+using OpenIddict.Abstractions;
+using OpenIddict.Server;
+using OpenIddict.Server.AspNetCore;
+using OpenIddict.Validation.AspNetCore;
 
 namespace Storm.TechTask.Api.Utilities.IdentityServer
 {
@@ -9,60 +16,73 @@ namespace Storm.TechTask.Api.Utilities.IdentityServer
             // We can't setup Identity Server this way when it's hosted in TestServer, so do nothing if we're in the apitest env.
             if (environment.EnvironmentName != SharedKernel.Utilities.Environment.ApiTest)
             {
-                // Read config
                 var identityServerConfig = IdentityServerConfig.New(configRoot);
+                services.AddSingleton(identityServerConfig);
 
-                // Token issue
-                services.AddIdentityServer()
-                        .AddDeveloperSigningCredential()
-                        .AddInMemoryApiScopes(ResourceManager.Scopes)
-                        .AddInMemoryApiResources(ResourceManager.Apis(identityServerConfig))
-                        .AddInMemoryClients(ClientManager.Clients(identityServerConfig));
+                AddOpenIddictServices(services);
 
-                // Token validation
-                services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                        .AddIdentityServerAuthentication(options =>
-                        {
-                            options.Authority = identityServerConfig.Issuer;
-                            options.RequireHttpsMetadata = false;
-                            options.ApiName = identityServerConfig.ApiName;
-                        });
+                services.AddHostedService<OpenIddictSeeder>();
+
+                services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
             }
         }
 
-        public static void AddTestIdProvider(this IServiceCollection services, IdentityServerConfig identityServerConfig, HttpMessageHandler identityServerMessageHandler)
+        public static void AddTestIdProvider(this IServiceCollection services, IdentityServerConfig identityServerConfig)
         {
-            // This setup for Identity Server correctly hosts it in TestServer.
+            // IdentityServerConfig is not registered in DI for tests; seeding is performed
+            // explicitly in CustomWebApplicationFactory.CreateHost, not via IHostedService.
+            AddOpenIddictServices(services);
 
-            // Token issue
-            services.AddIdentityServer()
-                    .AddDeveloperSigningCredential()
-                    .AddInMemoryApiScopes(ResourceManager.Scopes)
-                    .AddInMemoryApiResources(ResourceManager.Apis(identityServerConfig))
-                    .AddInMemoryClients(ClientManager.Clients(identityServerConfig));
-
-            // Token validation
-            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-                    .AddIdentityServerAuthentication(options =>
-                    {
-                        options.Authority = identityServerConfig.Issuer;
-                        options.RequireHttpsMetadata = false;
-                        options.ApiName = identityServerConfig.ApiName;
-                        options.JwtBackChannelHandler = identityServerMessageHandler;   // This is the key difference for dev v test!
-                    });
+            services.AddAuthentication(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
         }
 
-
-        public static void UseIdProvider(this IApplicationBuilder app, IWebHostEnvironment environment)
+        private static void AddOpenIddictServices(IServiceCollection services)
         {
-            // We can't start Identity Server this way when it's hosted in TestServer, so do nothing if we're in the apitest env.
-            if (environment.EnvironmentName != SharedKernel.Utilities.Environment.ApiTest)
+            // Manual registration avoids EF Core 9+ InMemory/SQLite provider conflict.
+            services.AddScoped(sp =>
             {
-                // Read config
-                app.UseIdentityServer();
-            }
+                var options = new DbContextOptionsBuilder<OpenIddictDbContext>()
+                    .UseInMemoryDatabase("OpenIddict")
+                    .UseOpenIddict()
+                    .Options;
+                return new OpenIddictDbContext(options);
+            });
+
+            services.AddOpenIddict()
+                .AddCore(options
+                    => options.UseEntityFrameworkCore().UseDbContext<OpenIddictDbContext>())
+                .AddServer(options =>
+                {
+                    options.SetTokenEndpointUris("connect/token");
+
+                    options.AllowClientCredentialsFlow();
+
+                    options
+                        .AddDevelopmentEncryptionCertificate()
+                        .AddDevelopmentSigningCertificate();
+
+                    options.DisableAccessTokenEncryption();
+
+                    options.AddEventHandler<OpenIddictServerEvents.HandleTokenRequestContext>(builder =>
+                        builder.UseInlineHandler(context =>
+                        {
+                            var identity = new ClaimsIdentity(
+                                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+                            identity.SetClaim(OpenIddictConstants.Claims.Subject, context.Request.ClientId);
+                            identity.SetScopes(context.Request.GetScopes());
+                            context.SignIn(new ClaimsPrincipal(identity));
+                            return default;
+                        }));
+
+                    options
+                        .UseAspNetCore()
+                        .DisableTransportSecurityRequirement();
+                })
+                .AddValidation(options =>
+                {
+                    options.UseLocalServer();
+                    options.UseAspNetCore();
+                });
         }
-
     }
-
 }
