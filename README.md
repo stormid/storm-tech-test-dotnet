@@ -1,8 +1,8 @@
 # Storm ID Tech Task
 
-This is a multi-project .Net 6.0 project.  It consists of a web api project, based on [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) principles, and a simple Razor pages application to consume the api.  There is a unit test project, and an integration test project that hits the api endpoints.
+This is a multi-project .Net 10.0 project.  It consists of a web api project, based on [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html) principles, and a simple Razor pages application to consume the api.  There is a unit test project, and an integration test project that hits the api endpoints.
 
-The api is deliberately very simple, managing the creation and retrieval of a "Project" entity only.
+The api is deliberately simple, managing the creation and retrieval of a "Project" entity only.
 
 Please push your work as commits to a user branch of this repository using the following branch naming convention:
 `users/<<your GitHub username>>/submission`

@@ -55,7 +55,6 @@ namespace Storm.TechTask.Api.Utilities
             }
 
             app.MapDefaultControllerRoute();
-            app.UseIdProvider(app.Environment);
             app.UseAuthentication();
             app.UseAuthorization();
 

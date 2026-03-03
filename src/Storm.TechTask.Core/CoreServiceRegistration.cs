@@ -20,7 +20,7 @@ namespace Storm.TechTask.Core
         public static IServiceCollection AddCore(this IServiceCollection services)
         {
             // MediatR
-            services.AddMediatR(typeof(CoreServiceRegistration));
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining(typeof(CoreServiceRegistration)));
             services.AddAuthorizersFromAssemblyContaining(typeof(CoreServiceRegistration));
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 

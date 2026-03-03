@@ -38,14 +38,27 @@ namespace Storm.TechTask.Api.Utilities.IdentityServer
             }
 
             // Get roles from "scope" claim (could just as easily come from "role" claim, with a different Id Provider config).
+            // Scopes may be space-separated or individual claims.
             AppRole roles = AppRole.Anonymous;
-            foreach (var scope in claimsPrincipal.FindAll("scope"))
+            foreach (var scopeClaim in claimsPrincipal.FindAll("scope"))
             {
-                // Eliminate anonymous role we added at start of loop.
-                roles &= ~AppRole.Anonymous;
+                var scopeValues = scopeClaim.Value.Contains(' ')
+                    ? scopeClaim.Value.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                    : [scopeClaim.Value];
 
-                // Convert scope to role enum. IS4 scope names are "scope.XXX" where "XXX" corresponds to name of App Role (see above).
-                roles |= Enum.Parse<AppRole>(scope.Value.Split('.')[1]);
+                foreach (var scopeValue in scopeValues)
+                {
+                    if (!scopeValue.StartsWith("scope."))
+                    {
+                        continue;
+                    }
+
+                    // Eliminate anonymous role we added at start of loop.
+                    roles &= ~AppRole.Anonymous;
+
+                    // Convert scope to role enum. Scope names are "scope.XXX" where "XXX" corresponds to name of App Role (see above).
+                    roles |= Enum.Parse<AppRole>(scopeValue.Split('.')[1]);
+                }
             }
 
             return new AppUser(username, roles);

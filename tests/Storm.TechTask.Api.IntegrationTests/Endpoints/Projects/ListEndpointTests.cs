@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using IdentityModel.Client;
+using Duende.IdentityModel.Client;
 
 using Storm.TechTask.Api.Endpoints.Project;
 using Storm.TechTask.Api.IntegrationTests.Utilities;

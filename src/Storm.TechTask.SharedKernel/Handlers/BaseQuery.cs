@@ -44,7 +44,7 @@ namespace Storm.TechTask.SharedKernel.Handlers
             return await _repository.ListAsync(specification, cancellationToken);
         }
 
-        protected async Task<TEntity?> LoadEntityBySpec<TEntity, TSpec>(TSpec specification, CancellationToken cancellationToken) where TSpec : ISingleResultSpecification, ISpecification<TEntity> where TEntity : BaseEntity, IAggregateRoot
+        protected async Task<TEntity?> LoadEntityBySpec<TEntity, TSpec>(TSpec specification, CancellationToken cancellationToken) where TSpec : ISingleResultSpecification<TEntity>, ISpecification<TEntity> where TEntity : BaseEntity, IAggregateRoot
         {
             return await _repository.GetBySpecAsync<TEntity, TSpec>(specification, cancellationToken);
         }

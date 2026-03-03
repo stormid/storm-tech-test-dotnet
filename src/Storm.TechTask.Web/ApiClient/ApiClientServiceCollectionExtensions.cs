@@ -1,5 +1,7 @@
-﻿
-using IdentityModel.Client;
+
+using Duende.IdentityModel.Client;
+
+using Microsoft.Extensions.Http.Resilience;
 
 using Polly;
 
@@ -15,10 +17,10 @@ namespace Storm.TechTask.Web.ApiClient
 
             services.AddRefitClient<IProjectApiClient>(new RefitSettings()
                 {
-                    AuthorizationHeaderValueGetter = async () =>
+                    AuthorizationHeaderValueGetter = async (request, cancellationToken) =>
                     {
                         var client = new HttpClient();
-                        var disco = await client.GetDiscoveryDocumentAsync(configuration.GetValue<string>("Authority"));
+                        var disco = await client.GetDiscoveryDocumentAsync(configuration.GetValue<string>("Authority"), cancellationToken);
                         if (disco.IsError)
                         {
                             throw new Exception(disco.Error);
@@ -45,14 +47,16 @@ namespace Storm.TechTask.Web.ApiClient
                     c.BaseAddress = new Uri(apiUrl);
                 })
                 .AddHttpMessageHandler<ApiClientHttpClientHandler>()
-                .AddTransientHttpErrorPolicy(policy =>
+                .AddResilienceHandler("CircuitBreaker", builder =>
                 {
-                    return policy.CircuitBreakerAsync(
-                        handledEventsAllowedBeforeBreaking: 2,
-                        durationOfBreak: TimeSpan.FromMinutes(1));
+                    builder.AddCircuitBreaker(new HttpCircuitBreakerStrategyOptions
+                    {
+                        SamplingDuration = TimeSpan.FromMinutes(1),
+                        FailureRatio = 1.0,
+                        MinimumThroughput = 2,
+                        BreakDuration = TimeSpan.FromMinutes(1)
+                    });
                 });
-
-
 
             return services;
         }

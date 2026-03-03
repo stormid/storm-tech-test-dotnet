@@ -69,13 +69,13 @@ namespace Storm.TechTask.Infrastructure.Logging
 
         public static LoggerConfiguration SetupCommonConfig(this LoggerConfiguration loggerConfig, HostBuilderContext context)
         {
-            return loggerConfig.ReadFrom.Configuration(context.Configuration, sectionName: "CommonLogger")
+            return loggerConfig.ReadFrom.Configuration(context.Configuration, new Serilog.Settings.Configuration.ConfigurationReaderOptions { SectionName = "CommonLogger" })
                                 .Enrich.FromLogContext();
         }
 
         private static LoggerConfiguration SetupSecurityConfig(this LoggerConfiguration loggerConfig, IConfiguration config)
         {
-            return loggerConfig.ReadFrom.Configuration(config, sectionName: "SecurityLogger")
+            return loggerConfig.ReadFrom.Configuration(config, new Serilog.Settings.Configuration.ConfigurationReaderOptions { SectionName = "SecurityLogger" })
                                 .Enrich.FromLogContext();
         }
 

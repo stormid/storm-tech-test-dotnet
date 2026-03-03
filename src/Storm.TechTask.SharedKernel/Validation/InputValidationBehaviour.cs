@@ -16,8 +16,8 @@ namespace Storm.TechTask.SharedKernel.Validation
             _validators = validators;
         }
 
-        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
-            RequestHandlerDelegate<TResponse> next)
+        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
+            CancellationToken cancellationToken)
         {
             // Guard: No validators
             if (!_validators.Any())

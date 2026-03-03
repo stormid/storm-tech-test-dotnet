@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -21,19 +21,11 @@ namespace Storm.TechTask.Api.Utilities.IdentityServer
                 return;
             }
 
+            operation.Security ??= [];
             operation.Security.Add(new OpenApiSecurityRequirement
             {
                 {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = SwaggerRegistration.SecuritySchemeName
-                        },
-                        UnresolvedReference = true
-                    },
-                    new string[]{ }
+                    new OpenApiSecuritySchemeReference(SwaggerRegistration.SecuritySchemeName), []
                 }
             });
         }
