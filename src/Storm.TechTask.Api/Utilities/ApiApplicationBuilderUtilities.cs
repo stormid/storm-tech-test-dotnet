@@ -1,4 +1,4 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi;
 
 using Storm.TechTask.Core;
 using Storm.TechTask.Infrastructure;
@@ -20,7 +20,7 @@ namespace Storm.TechTask.Api.Utilities
     {
         public static WebApplicationBuilder AddDatabase(this WebApplicationBuilder builder)
         {
-            string connectionString = builder.Configuration.GetConnectionString("SqliteConnection");  //Configuration.GetConnectionString("DefaultConnection");
+            string? connectionString = builder.Configuration.GetConnectionString("SqliteConnection");  //Configuration.GetConnectionString("DefaultConnection");
 
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite(connectionString));
 
@@ -68,7 +68,6 @@ namespace Storm.TechTask.Api.Utilities
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Storm.NET API", Version = "v1" });
-                c.MapType<DateOnly>(() => new OpenApiSchema { Type = "string", Format = "date" }); // TODO [GJL] Drop this if/when Swagger natively supports DateOnly.
                 c.CustomSchemaIds(type => type.FormatSwaggerSchemaId());
                 c.EnableAnnotations();
                 c.AddOAuthOptions(builder.Configuration);
