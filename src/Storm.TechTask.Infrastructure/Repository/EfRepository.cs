@@ -28,7 +28,7 @@ namespace Storm.TechTask.Infrastructure.Repository
             return await _dbContext.Set<T>().SingleOrDefaultAsync(e => e.Id == id, cancellationToken);
         }
 
-        public async Task<T?> GetBySpecAsync<T, TSpec>(TSpec specification, CancellationToken cancellationToken) where TSpec : ISingleResultSpecification, ISpecification<T> where T : BaseEntity
+        public async Task<T?> GetBySpecAsync<T, TSpec>(TSpec specification, CancellationToken cancellationToken) where TSpec : ISingleResultSpecification<T>, ISpecification<T> where T : BaseEntity
         {
             var specificationResult = ApplySpecification(specification);
             return await specificationResult.FirstOrDefaultAsync(cancellationToken);

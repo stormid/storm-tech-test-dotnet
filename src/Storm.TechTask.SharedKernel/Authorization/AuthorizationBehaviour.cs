@@ -17,7 +17,7 @@ namespace Storm.TechTask.SharedKernel.Authorization
             _loggingService = loggingService;
         }
 
-        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             if ((await _authorizer.Authorize(_securityService.CurrentUser, request, cancellationToken)).IsAuthorized)
             {

@@ -34,7 +34,7 @@ namespace Storm.TechTask.SharedKernel.Handlers
         }
 
         protected async Task<TEntity> LoadEntityBySpec<TEntity, TSpec>(TSpec specification, CancellationToken cancellationToken)
-            where TEntity : BaseEntity, IAggregateRoot where TSpec : ISingleResultSpecification, ISpecification<TEntity>
+            where TEntity : BaseEntity, IAggregateRoot where TSpec : ISingleResultSpecification<TEntity>, ISpecification<TEntity>
         {
             return await _repository.GetBySpecAsync<TEntity, TSpec>(specification, cancellationToken) ?? throw new EntityNotFoundException<TEntity>(specification);
         }
