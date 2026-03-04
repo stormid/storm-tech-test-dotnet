@@ -12,7 +12,8 @@ namespace Storm.TechTask.Api.Utilities.IdentityServer
         public static SwaggerGenOptions AddOAuthOptions(this SwaggerGenOptions options, IConfigurationRoot configRoot)
         {
             var identityServerConfig = IdentityServerConfig.New(configRoot);
-            options.AddSecurityDefinition(SecuritySchemeName, new OpenApiSecurityScheme
+            var scopes = ResourceManager.ScopeNames.ToDictionary(s => s, s => s);
+            var scheme = new OpenApiSecurityScheme
             {
                 Type = SecuritySchemeType.OAuth2,
                 Flows = new OpenApiOAuthFlows
@@ -20,11 +21,16 @@ namespace Storm.TechTask.Api.Utilities.IdentityServer
                     ClientCredentials = new OpenApiOAuthFlow
                     {
                         AuthorizationUrl = new Uri(identityServerConfig.AuthZEndpoint),
-                        TokenUrl = new Uri(identityServerConfig.TokenEndpoint)
+                        TokenUrl = new Uri(identityServerConfig.TokenEndpoint),
+                        Scopes = scopes
                     }
                 }
+            };
+            options.AddSecurityDefinition(SecuritySchemeName, scheme);
+            options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+            {
+                { new OpenApiSecuritySchemeReference(SecuritySchemeName, doc), scopes.Keys.ToList() }
             });
-            options.OperationFilter<OAuthSecurityRequirementOperationFilter>();
 
             return options;
         }
